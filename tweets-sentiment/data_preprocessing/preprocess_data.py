@@ -16,13 +16,14 @@ def preprocessing(data):
                 tweet = x.split(separator)[1]
                 #TODO: pozvati funkcije, proslediti tweet
                 tweet =  dt.transform_post(cd.clear_data(tweet))
+                tweet = cd.remove_special_characters(tweet)
                 line = sentiment + separator + tweet + " ==== " + x + "\n"
                 preprocessedData_file.write(line)
 
     preprocessedData_file.close()
 
 def main():
-    with open(path, 'rb') as csvfile:
+    with open(path, 'r') as csvfile:
         data = [next(csvfile) for x in range(100)]
     preprocessing(data)
 
