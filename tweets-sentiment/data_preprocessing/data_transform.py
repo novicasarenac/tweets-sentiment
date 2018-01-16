@@ -1,4 +1,4 @@
-from nltk.tokenize import TweetTokenizer
+import nltk.tokenize
 from nltk.stem import PorterStemmer
 
 POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';)', ':-)', ':-]',
@@ -12,7 +12,7 @@ NEGATIVE_WORD = 'sad'
 
 
 def init_tokenizer(preserve_case=False, strip_handles=False, reduce_len=True):
-    return TweetTokenizer(preserve_case, strip_handles, reduce_len)
+    return nltk.tokenize.TweetTokenizer(preserve_case, strip_handles, reduce_len)
 
 
 def transform_post(twitter_post):

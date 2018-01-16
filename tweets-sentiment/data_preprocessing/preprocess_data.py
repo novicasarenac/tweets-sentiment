@@ -1,4 +1,6 @@
 import csv
+import clear_data as cd
+import data_transform as dt
 
 path = '../../data/data.csv'
 
@@ -13,8 +15,8 @@ def preprocessing(data):
                 sentiment = x.split(',')[1]
                 tweet = x.split(separator)[1]
                 #TODO: pozvati funkcije, proslediti tweet
-
-                line = sentiment + separator + tweet
+                tweet =  dt.transform_post(cd.clear_data(tweet))
+                line = sentiment + separator + tweet + " ==== " + x + "\n"
                 preprocessedData_file.write(line)
 
     preprocessedData_file.close()

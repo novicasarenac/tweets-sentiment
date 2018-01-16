@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nltk.corpus import stopwords
 from nltk.tokenize.casual import TweetTokenizer
 import re
@@ -26,7 +27,7 @@ def clear_data(tweet):
     withoutUrls = remove_urls(tokens)
     withProcessedHashtags = process_hashtags(withoutUrls)
     cleanTweet = remove_stopwords(withProcessedHashtags)
-    print(cleanTweet)
+    return ' '.join(cleanTweet)
 
 if __name__ == "__main__":
     clear_data("she has the same car Volvo as @Marco ooookkkkk #ferenc #car http://www.google.com");
