@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 from nltk.corpus import stopwords
 from nltk.tokenize.casual import TweetTokenizer
+from nltk.tokenize import RegexpTokenizer
 import re
 
 def remove_stopwords(tokenizedText):
@@ -20,6 +20,11 @@ def process_hashtags(tokenizedText):
             withoutHashtags.append(word)
     return withoutHashtags
 
+def remove_special_characters(tweet):
+    tokenizer = RegexpTokenizer(r'\w+')
+    tokens = tokenizer.tokenize(tweet)
+    return ' '.join(tokens)
+
 def clear_data(tweet):
     #remove tags and reduce length
     tokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
@@ -30,4 +35,6 @@ def clear_data(tweet):
     return ' '.join(cleanTweet)
 
 if __name__ == "__main__":
-    clear_data("she has the same car Volvo as @Marco ooookkkkk #ferenc #car http://www.google.com");
+    example = "she has the same :() car Volvo : as @Marco ooookkkkk #ferenc #car http://www.google.com"
+    processedEx = clear_data(example)
+    print(remove_special_characters(processedEx))
