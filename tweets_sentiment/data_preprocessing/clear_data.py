@@ -3,12 +3,15 @@ from nltk.tokenize.casual import TweetTokenizer
 from nltk.tokenize import RegexpTokenizer
 import re
 
+
 def remove_stopwords(tokenizedText):
     return [word for word in tokenizedText if word not in stopwords.words('english')]
+
 
 def remove_urls(tokenizedText):
     reg = re.compile('http[s]?://|www.(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
     return [word for word in tokenizedText if not reg.match(word)]
+
 
 def process_hashtags(tokenizedText):
     reg = re.compile('(?:^|\s)[＃#]{1}(\w+)')
@@ -20,10 +23,12 @@ def process_hashtags(tokenizedText):
             withoutHashtags.append(word)
     return withoutHashtags
 
+
 def remove_special_characters(tweet):
     tokenizer = RegexpTokenizer(r'\w+')
     tokens = tokenizer.tokenize(tweet)
     return ' '.join(tokens)
+
 
 def clear_data(tweet):
     #remove tags and reduce length
@@ -33,6 +38,7 @@ def clear_data(tweet):
     withProcessedHashtags = process_hashtags(withoutUrls)
     cleanTweet = remove_stopwords(withProcessedHashtags)
     return ' '.join(cleanTweet)
+
 
 if __name__ == "__main__":
     example = "she has the same :() car Volvo : as @Marco ooookkkkk #ferenc #car http://www.google.com"
