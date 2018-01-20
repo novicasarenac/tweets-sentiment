@@ -3,3 +3,5 @@
 *.pyc
 __pycharm__/
 *.egg-info/
+build/
+dist/
