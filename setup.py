@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
         name="tweets-sentiment",
@@ -6,11 +6,9 @@ setup(
         author="Novica Sarenac, Predrag Njegovanovic, Sasa Ferenc",
         author_email="novicasarenac@gmail.com, djaps94@gmail.com",
         description="Sentiment analysis of Twitter posts and comments",
-        licence="MIT",
+        license="MIT",
         url="https://github.com/novicasarenac/tweets-sentiment",
-        packages=[
-            "tweets-sentiment"
-        ],
+        packages=find_packages(),
         install_requires=[
             "numpy",
             "scipy",

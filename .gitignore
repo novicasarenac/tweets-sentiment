@@ -1,2 +1,7 @@
 /data
 .idea/
+*.pyc
+__pycharm__/
+*.egg-info/
+build/
+dist/
