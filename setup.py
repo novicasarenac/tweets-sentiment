@@ -9,6 +9,7 @@ setup(
         license="MIT",
         url="https://github.com/novicasarenac/tweets-sentiment",
         packages=find_packages(),
+        include_package_data=True,
         install_requires=[
             "numpy",
             "scipy",
