@@ -1,12 +1,13 @@
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-def makeBagOfWords(tweets):
+def make_bag_of_words(tweets):
     vectorizer = CountVectorizer()
-    bagOfWords = vectorizer.fit_transform(tweets)
-    return bagOfWords
+    bag_of_words = vectorizer.fit_transform(tweets)
+    return bag_of_words, vectorizer
 
 
 if __name__ == '__main__':
-    example = ['this is the first', 'this is the second']
-    print(makeBagOfWords(example).toarray())
+    example = ['this is the first first', 'this is the second']
+    bag_of_words, vectorizer = make_bag_of_words(example)
+    print(bag_of_words.toarray())
