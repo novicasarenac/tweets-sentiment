@@ -1,10 +1,12 @@
+from os import path
 from tweets_sentiment.data_preprocessing import clear_data as cd
 from tweets_sentiment.data_preprocessing import data_transform as dt
 
-path = '../../data/data.csv'
+full_path = path.dirname(path.abspath(__file__ + "/../"))
+basepath = path.join(full_path, 'data/data.csv')
 
-testData = '../../data/testData.csv'
-processedData = '../../data/preprocessedData.csv'
+testData = path.join(full_path, 'data/testData.csv')
+processedData = path.join(full_path, 'data/preprocessedData.csv')
 separator = 'Sentiment140,'
 
 
@@ -28,7 +30,7 @@ def preprocessing(data, fileName):
             if separator in x:
                 sentiment = x.split(',')[1]
                 tweet = x.split(separator)[1]
-                #TODO: pozvati funkcije, proslediti tweet
+                # TODO: pozvati funkcije, proslediti tweet
                 tweet = dt.transform_post(cd.clear_data(tweet))
                 tweet = cd.remove_special_characters(tweet)
                 line = sentiment + separator + tweet + "\n"
@@ -38,11 +40,11 @@ def preprocessing(data, fileName):
 
 
 def main():
-   with open(path, 'r', encoding="utf8") as csvfile:
-       data = [next(csvfile) for x in range(30000)]
-   preprocessing(data[0:15000], testData)
-   preprocessing(data[15000:30000], processedData)
-   vector_representation(testData)
+    with open(path, 'r', encoding="utf8") as csvfile:
+        data = [next(csvfile) for x in range(30000)]
+    preprocessing(data[0:15000], testData)
+    preprocessing(data[15000:30000], processedData)
+    vector_representation(testData)
 
 
 if __name__ == "__main__":

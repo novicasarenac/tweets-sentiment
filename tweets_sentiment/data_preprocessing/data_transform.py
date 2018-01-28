@@ -23,12 +23,17 @@ def init_tokenizer(preserve_case=False, strip_handles=False, reduce_len=True):
 
 
 def transform_post(twitter_post):
-    tokenizer = init_tokenizer()
     tokens = []
+    tokenizer = init_tokenizer()
+    slang_dictionary = load_sleng_dict()
     for token in tokenizer.tokenize(twitter_post):
-        tokens.append(emoticon_transformation(token))
+        process_token = transform_slang_words(slang_dictionary,
+                                              emoticon_transformation(token))
+        tokens.append(process_token)
 
-    return ' '.join(tokens)
+    pos_tag_tokens = pos_tagging(tokenizer.tokenize(' '.join(tokens)))
+
+    return lemmatization(pos_tag_tokens)
 
 
 def lemmatization(pos_tag_sentence):
@@ -66,8 +71,15 @@ def emoticon_transformation(token):
     return token
 
 
+def transform_slang_words(slang_dictionary, token):
+    if token in slang_dictionary:
+        return slang_dictionary[token]
+    else:
+        return token
+
+
 def load_sleng_dict():
-    basepath = path.dirname(path.abspath(__file__ + "/../../"))
+    basepath = path.dirname(path.abspath(__file__ + "/../"))
     full_path = path.join(basepath, SLANG_FILE_PATH)
     slang_dictionary = {}
     with open(full_path, 'r') as slang_file:
@@ -79,6 +91,5 @@ def load_sleng_dict():
 
 
 if __name__ == "__main__":
-    sentence = "I'm going to win."
-    tokenized_sentence = init_tokenizer().tokenize(sentence)
-    pos_tagged = pos_tagging(tokenized_sentence)
+    sentence = "I'm going to win asap :)."
+    print(transform_post(sentence))
