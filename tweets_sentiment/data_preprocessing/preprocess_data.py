@@ -1,5 +1,5 @@
-import clear_data as cd
-import data_transform as dt
+from tweets_sentiment.data_preprocessing import clear_data as cd
+from tweets_sentiment.data_preprocessing import data_transform as dt
 
 path = '../../data/data.csv'
 
@@ -10,7 +10,7 @@ separator = 'Sentiment140,'
 
 def vector_representation(fileName):
     with open(fileName, 'r') as testFile:
-        data = [next(testFile) for x in range(19966)]
+        data = [next(testFile) for x in range(14966)]
 
     sentiments = []
     tweets = []
@@ -38,11 +38,11 @@ def preprocessing(data, fileName):
 
 
 def main():
-   # with open(path, 'r', encoding="utf8") as csvfile:
-   #     data = [next(csvfile) for x in range(35000)]
-   # preprocessing(data[0:20000], testData)
-   # preprocessing(data[20000:35000], processedData)
-    vector_representation(testData)
+   with open(path, 'r', encoding="utf8") as csvfile:
+       data = [next(csvfile) for x in range(30000)]
+   preprocessing(data[0:15000], testData)
+   preprocessing(data[15000:30000], processedData)
+   vector_representation(testData)
 
 
 if __name__ == "__main__":
