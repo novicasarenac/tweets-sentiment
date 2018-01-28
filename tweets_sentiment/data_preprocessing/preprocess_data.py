@@ -40,7 +40,7 @@ def preprocessing(data, fileName):
 
 
 def main():
-    with open(path, 'r', encoding="utf8") as csvfile:
+    with open(basepath, 'r', encoding="utf8") as csvfile:
         data = [next(csvfile) for x in range(30000)]
     preprocessing(data[0:15000], testData)
     preprocessing(data[15000:30000], processedData)

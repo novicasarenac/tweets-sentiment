@@ -1,11 +1,13 @@
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
 from tweets_sentiment.data_preprocessing import preprocess_data as pd
+from os import path
 import words_embedding as we
 
+full_path = path.dirname(path.abspath(__file__ + "/../"))
 
-training_set = '../../data/preprocessedData.csv'
-test_set = '../../data/testData.csv'
+training_set = path.join(full_path, 'data/preprocessedData.csv')
+test_set = path.join(full_path, 'data/testData.csv')
 
 
 def train():
