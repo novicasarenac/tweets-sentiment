@@ -32,7 +32,6 @@ def transform_post(twitter_post):
         tokens.append(process_token)
 
     pos_tag_tokens = pos_tagging(tokenizer.tokenize(' '.join(tokens)))
-
     return lemmatization(pos_tag_tokens)
 
 
@@ -88,8 +87,3 @@ def load_sleng_dict():
             slang_dictionary.update({splits[0]: splits[1].strip()})
 
     return slang_dictionary
-
-
-if __name__ == "__main__":
-    sentence = "I'm going to win asap :)."
-    print(transform_post(sentence))
