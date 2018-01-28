@@ -7,13 +7,15 @@ data = '../../data/testData.csv'
 
 def train():
     labels, tweets = pd.vector_representation(data)
-    bagOfWords = we.makeBagOfWords(tweets)
-    classifier = MultinomialNB().fit(bagOfWords, labels)
-    return classifier
+    bag_of_words, vectorizer = we.make_bag_of_words(tweets)
+    classifier = MultinomialNB()
+    classifier.fit(bag_of_words.toarray(), labels)
+    return classifier, vectorizer
 
 
 if __name__ == '__main__':
-    train()
-    clf = train()
-    example = "I am so happy :)"
-    print(clf.predict(we.makeBagOfWords(example)))
+    clf, vectorizer = train()
+    example = "It was good last night"
+    transformed_example = vectorizer.transform([example]).toarray()
+    a = clf.predict(transformed_example)
+    print(a)
