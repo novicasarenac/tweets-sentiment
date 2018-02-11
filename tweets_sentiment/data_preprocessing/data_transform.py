@@ -3,15 +3,8 @@ from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 import nltk
 import nltk.tokenize
+from constants import POSITIVE_EMOTICONS, NEGATIVE_EMOTICONS, POSITIVE_WORD, NEGATIVE_WORD, SHORT_WORDS
 
-POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';)', ':-)', ':-]',
-                          ':=]', ':-D', ':-))', '=)', ':-}', ':}', '=D'])
-
-NEGATIVE_EMOTICONS = set([':(', '):', '=(', ':O', '=O', ':\\', ':-X', ':-|',
-                          ':\'(', ':-\'(', ':[', ':-[', ':-(', ':@', ':P', ':-P'])
-
-POSITIVE_WORD = 'happy'
-NEGATIVE_WORD = 'sad'
 
 SLANG_FILE_PATH = 'data/slang.txt'
 
