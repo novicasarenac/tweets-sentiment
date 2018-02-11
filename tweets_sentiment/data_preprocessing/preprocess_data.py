@@ -12,7 +12,8 @@ separator = 'Sentiment140,'
 
 def vector_representation(fileName):
     with open(fileName, 'r') as testFile:
-        data = [next(testFile) for x in range(14966)]
+        lines = testFile.readlines()
+        data = [x.strip() for x in lines]
 
     sentiments = []
     tweets = []
@@ -30,7 +31,6 @@ def preprocessing(data, fileName):
             if separator in x:
                 sentiment = x.split(',')[1]
                 tweet = x.split(separator)[1]
-                # TODO: pozvati funkcije, proslediti tweet
                 tweet = dt.transform_post(cd.clear_data(tweet))
                 tweet = cd.remove_special_characters(tweet)
                 line = sentiment + separator + tweet + "\n"
