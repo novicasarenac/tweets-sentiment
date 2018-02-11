@@ -22,7 +22,8 @@ def transform_post(twitter_post):
     for token in tokenizer.tokenize(twitter_post):
         process_token = transform_slang_words(slang_dictionary,
                                               emoticon_transformation(token))
-        tokens.append(process_token)
+        final_token = transform_shortwords(process_token)
+        tokens.append(final_token)
 
     pos_tag_tokens = pos_tagging(tokenizer.tokenize(' '.join(tokens)))
     return lemmatization(pos_tag_tokens)
@@ -80,3 +81,10 @@ def load_sleng_dict():
             slang_dictionary.update({splits[0]: splits[1].strip()})
 
     return slang_dictionary
+
+
+def transform_shortwords(token):
+    if token.lower() in SHORT_WORDS:
+        return SHORT_WORDS[token.lower()]
+    else:
+        return token
