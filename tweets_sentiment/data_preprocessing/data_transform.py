@@ -4,7 +4,7 @@ from nltk.stem import WordNetLemmatizer
 
 import nltk
 import nltk.tokenize
-from constants import POSITIVE_EMOTICONS, NEGATIVE_EMOTICONS, POSITIVE_WORD, NEGATIVE_WORD, SHORT_WORDS
+from tweets_sentiment.data_preprocessing.constants import POSITIVE_EMOTICONS, NEGATIVE_EMOTICONS, POSITIVE_WORD, NEGATIVE_WORD, SHORT_WORDS
 import enchant
 
 SLANG_FILE_PATH = 'data/slang.txt'
@@ -26,7 +26,8 @@ def transform_post(twitter_post):
                                               emoticon_transformation(token))
         final_token = transform_shortwords(process_token)
         correct_token = spell_checking(final_token, checker_dictionary)
-        tokens.append(correct_token)
+        full_words = remove_one_character_words(correct_token)
+        tokens.append(full_words)
 
     pos_tag_tokens = pos_tagging(tokenizer.tokenize(' '.join(tokens)))
     return lemmatization(pos_tag_tokens)
@@ -98,7 +99,11 @@ def spell_checking(token, dictionary):
         return token
     else:
         suggest_arr = dictionary.suggest(token)
-        if len(suggest_arr) == 0:
-            return token
-        else:
-            return suggest_arr[0]
+        return token if len(suggest_arr) == 0 else suggest_arr[0]
+
+
+def remove_one_character_words(token):
+    if(len(token) == 1):
+        return '' if "i" not in token else token
+
+    return token

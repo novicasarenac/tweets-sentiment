@@ -28,6 +28,7 @@ def vector_representation(fileName):
 def preprocessing(data, fileName):
     with open(fileName, "w") as preprocessedData_file:
         for index, x in enumerate(data):
+            print(index)
             if separator in x:
                 sentiment = x.split(',')[1]
                 tweet = x.split(separator)[1]
