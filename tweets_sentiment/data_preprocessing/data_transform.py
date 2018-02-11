@@ -1,10 +1,11 @@
 from os import path
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
+
 import nltk
 import nltk.tokenize
 from constants import POSITIVE_EMOTICONS, NEGATIVE_EMOTICONS, POSITIVE_WORD, NEGATIVE_WORD, SHORT_WORDS
-
+import enchant
 
 SLANG_FILE_PATH = 'data/slang.txt'
 
@@ -19,11 +20,13 @@ def transform_post(twitter_post):
     tokens = []
     tokenizer = init_tokenizer()
     slang_dictionary = load_sleng_dict()
+    checker_dictionary = enchant.Dict('en_US')
     for token in tokenizer.tokenize(twitter_post):
         process_token = transform_slang_words(slang_dictionary,
                                               emoticon_transformation(token))
         final_token = transform_shortwords(process_token)
-        tokens.append(final_token)
+        correct_token = spell_checking(final_token, checker_dictionary)
+        tokens.append(correct_token)
 
     pos_tag_tokens = pos_tagging(tokenizer.tokenize(' '.join(tokens)))
     return lemmatization(pos_tag_tokens)
@@ -88,3 +91,14 @@ def transform_shortwords(token):
         return SHORT_WORDS[token.lower()]
     else:
         return token
+
+
+def spell_checking(token, dictionary):
+    if(dictionary.check(token)):
+        return token
+    else:
+        suggest_arr = dictionary.suggest(token)
+        if len(suggest_arr) == 0:
+            return token
+        else:
+            return suggest_arr[0]
