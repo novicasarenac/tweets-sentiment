@@ -1,25 +1,22 @@
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
-from tweets_sentiment.data_preprocessing import preprocess_data as pd
 from os import path
 import words_embedding as we
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
 full_path = path.dirname(path.abspath(__file__ + "/../"))
-
-training_set = path.join(full_path, 'data/preprocessedData.csv')
-test_set = path.join(full_path, 'data/testData.csv')
+dataset = path.join(full_path, 'data/preprocessed_dataset.csv')
 
 
-def train():
-    labels, tweets = pd.vector_representation(training_set)
+def train(labels, tweets):
     bag_of_words, vectorizer = we.make_bag_of_words(tweets)
     classifier = MultinomialNB()
     classifier.fit(bag_of_words.toarray(), labels)
     return classifier, vectorizer
 
 
-def compute_accuracy(classifier, vectorizer, data_set):
-    labels, tweets = pd.vector_representation(data_set)
+def compute_accuracy(classifier, vectorizer, tweets, labels):
     transformed_tweets = vectorizer.transform(tweets).toarray()
     prediction = classifier.predict(transformed_tweets)
     # precision, recall, f1 score
@@ -31,11 +28,11 @@ def compute_accuracy(classifier, vectorizer, data_set):
     print('Score: ' + str(classifier_score))
 
 
-def evaluate(classifier, vectorizer):
+def evaluate(classifier, vectorizer, X_train, X_test, y_train, y_test):
     print('Training set accuracy: ')
-    compute_accuracy(classifier, vectorizer, training_set)
+    compute_accuracy(classifier, vectorizer, X_train, y_train)
     print('Test set accuracy: ')
-    compute_accuracy(classifier, vectorizer, test_set)
+    compute_accuracy(classifier, vectorizer, X_test, y_test)
 
 
 def get_sentiment(classifier, vectorizer, tweet):
@@ -43,8 +40,17 @@ def get_sentiment(classifier, vectorizer, tweet):
     return classifier.predict(transformed_tweet)
 
 
+def read_data():
+    data = pd.read_csv(dataset)
+    labels = data['sentiment']
+    tweets = data['tweet'].values.astype('U')
+
+    return labels, tweets
+
+
 if __name__ == '__main__':
-    classifier, vectorizer = train()
-    evaluate(classifier, vectorizer)
-    example = "It was good last night"
-    print(get_sentiment(classifier, vectorizer, example))
+    labels, tweets = read_data()
+    X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size = 0.33)
+
+    classifier, vectorizer = train(y_train, X_train)
+    evaluate(classifier, vectorizer, X_train, X_test, y_train, y_test)

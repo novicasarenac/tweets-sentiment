@@ -4,10 +4,8 @@ from nltk.stem import WordNetLemmatizer
 
 import nltk
 import nltk.tokenize
-from tweets_sentiment.data_preprocessing.constants import POSITIVE_EMOTICONS, NEGATIVE_EMOTICONS, POSITIVE_WORD, NEGATIVE_WORD, SHORT_WORDS
+from tweets_sentiment.data_preprocessing.constants import POSITIVE_EMOTICONS, NEGATIVE_EMOTICONS, POSITIVE_WORD, NEGATIVE_WORD, SHORT_WORDS, SLANG_FILE_PATH
 import enchant
-
-SLANG_FILE_PATH = 'data/slang.txt'
 
 
 def init_tokenizer(preserve_case=False, strip_handles=False, reduce_len=True):

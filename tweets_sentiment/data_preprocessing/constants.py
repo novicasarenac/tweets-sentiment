@@ -1,3 +1,5 @@
+SLANG_FILE_PATH = 'data/slang.txt'
+
 POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';)', ':-)', ':-]',
                           ':=]', ':-D', ':-))', '=)', ':-}', ':}', '=D'])
 
