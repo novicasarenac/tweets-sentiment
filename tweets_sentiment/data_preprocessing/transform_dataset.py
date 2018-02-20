@@ -32,7 +32,7 @@ SENTIMENTS = {
 
 def transform_dataset():
     data = pd.read_csv(FULL_DATASET)
-    new_data = pd.DataFrame(columns = ['sentiment', 'tweet'])
+    new_data = pd.DataFrame(columns=['sentiment', 'tweet'])
 
     for index, tweet in data.iterrows():
         if tweet['sentiment'] not in SENTIMENTS['unlabelled']:
