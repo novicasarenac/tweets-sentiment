@@ -31,6 +31,6 @@ if __name__ == '__main__':
     nb = init_naive_bayes()
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size=0.33)
-    feature_vector, vectorizer = we.make_bag_of_words(tweets)
-    classifier = te.train(nb, X_train, y_train)
+    feature_vector, vectorizer = we.make_bag_of_words(X_train)
+    classifier = te.train(nb, feature_vector.toarray(), y_train)
     te.evaluate(classifier, vectorizer, X_train, X_test, y_train, y_test)

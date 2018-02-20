@@ -1,12 +1,11 @@
-from sklearn.svm import SVC
-from tweets_sentiment.data_preprocessing import preprocess_data as pd
-from os import path
+from sklearn.linear_model import SGDClassifier
 
 import words_embedding as we
 import train_and_eval as te
 
+
 def init_svm():
-    return SVC()
+    return SGDClassifier()
 
 
 if __name__ == '__main__':
