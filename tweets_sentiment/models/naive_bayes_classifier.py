@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 full_path = path.dirname(path.abspath(__file__ + "/../"))
-new_data = path.join(full_path, 'data/preprocessed_dataset.csv')
+dataset = path.join(full_path, 'data/preprocessed_dataset.csv')
 
 
 def train(labels, tweets):
@@ -41,7 +41,7 @@ def get_sentiment(classifier, vectorizer, tweet):
 
 
 def read_data():
-    data = pd.read_csv(new_data)
+    data = pd.read_csv(dataset)
     labels = data['sentiment']
     tweets = data['tweet'].values.astype('U')
 
