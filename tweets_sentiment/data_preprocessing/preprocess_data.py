@@ -1,52 +1,24 @@
 from os import path
+import pandas as pd
 from tweets_sentiment.data_preprocessing import clear_data as cd
 from tweets_sentiment.data_preprocessing import data_transform as dt
 
-full_path = path.dirname(path.abspath(__file__ + "/../"))
-basepath = path.join(full_path, 'data/data.csv')
 
-testData = path.join(full_path, 'data/testData.csv')
-processedData = path.join(full_path, 'data/preprocessedData.csv')
-separator = 'Sentiment140,'
+FULL_PATH = path.dirname(path.abspath(__file__ + "/../"))
+DATASET_DESTINATION = path.join(FULL_PATH, 'data/new_data.csv')
+PREPROCESSED_DATASET = path.join(FULL_PATH, 'data/preprocessed_dataset.csv')
 
 
-def vector_representation(fileName):
-    with open(fileName, 'r') as testFile:
-        lines = testFile.readlines()
-        data = [x.strip() for x in lines]
-
-    sentiments = []
-    tweets = []
-    for index, x in enumerate(data):
-        sentiment, tweet = x.split(separator)
-        sentiments.insert(index, sentiment)
-        tweets.insert(index, tweet)
-
-    return list(map(int, sentiments)), tweets
+def preprocess_data():
+    data = pd.read_csv(DATASET_DESTINATION)
+    preprocessed_data = pd.DataFrame(columns = ['sentiment', 'tweet'])
+    for index, row in data.iterrows():
+        tweet = row['tweet']
+        tweet = dt.transform_post(cd.clear_data(tweet))
+        tweet = cd.remove_special_characters(tweet)
+        preprocessed_data.loc[len(preprocessed_data)] = [row['sentiment'], tweet]
+    preprocessed_data.to_csv(PREPROCESSED_DATASET)
 
 
-def preprocessing(data, fileName):
-    with open(fileName, "w") as preprocessedData_file:
-        for index, x in enumerate(data):
-            print(index)
-            if separator in x:
-                sentiment = x.split(',')[1]
-                tweet = x.split(separator)[1]
-                tweet = dt.transform_post(cd.clear_data(tweet))
-                tweet = cd.remove_special_characters(tweet)
-                line = sentiment + separator + tweet + "\n"
-                preprocessedData_file.write(line)
-
-        preprocessedData_file.close()
-
-
-def main():
-    with open(basepath, 'r', encoding="utf8") as csvfile:
-        data = [next(csvfile) for x in range(30000)]
-    preprocessing(data[0:15000], testData)
-    preprocessing(data[15000:30000], processedData)
-    vector_representation(testData)
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    preprocess_data()

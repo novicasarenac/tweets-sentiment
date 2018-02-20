@@ -36,7 +36,7 @@ def transform_dataset():
 
     for index, tweet in data.iterrows():
         if tweet['sentiment'] not in SENTIMENTS['unlabelled']:
-            new_data.loc[len(new_data)] = [1 if tweet['sentiment'] in SENTIMENTS['positive'] else 0, tweet['content']]
+            new_data.loc[len(new_data)] = [0 if tweet['sentiment'] in SENTIMENTS['negative'] else 1, tweet['content']]
     new_data.to_csv(DATASET_DESTINATION)
 
 

@@ -7,9 +7,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 full_path = path.dirname(path.abspath(__file__ + "/../"))
-
-training_set = path.join(full_path, 'data/preprocessedData.csv')
-test_set = path.join(full_path, 'data/testData.csv')
 new_data = path.join(full_path, 'data/preprocessed_dataset.csv')
 
 
