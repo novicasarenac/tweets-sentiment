@@ -1,5 +1,8 @@
 import pandas as pd
 
+from tweets_sentiment.preprocessing.constants import FULL_DATASET
+from tweets_sentiment.preprocessing.constants import DATASET_DESTINATION
+
 SENTIMENTS = {
     'positive': [
         'love',

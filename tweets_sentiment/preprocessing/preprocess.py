@@ -1,8 +1,8 @@
 import pandas as pd
-from tweets_sentiment.data_preprocessing import clear_data as cd
-from tweets_sentiment.data_preprocessing import data_transform as dt
-from tweets_sentiment.data_preprocessing.constants import DATASET_DESTINATION
-from tweets_sentiment.data_preprocessing.constants import PREPROCESSED_DATASET
+from tweets_sentiment.preprocessing import clear_data as cd
+from tweets_sentiment.preprocessing import data_transform as dt
+from tweets_sentiment.preprocessing.constants import DATASET_DESTINATION
+from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
 
 
 def preprocess_data():

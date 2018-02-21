@@ -1,10 +1,10 @@
+import embedding as we
+import train_and_eval as te
+import pandas as pd
+
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
 from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
-
-import words_embedding as we
-import train_and_eval as te
-import pandas as pd
 
 
 def init_svm():

@@ -1,10 +1,10 @@
+import pandas as pd
+import embedding as we
+import train_and_eval as te
+
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
-
-import pandas as pd
-import words_embedding as we
-import train_and_eval as te
 
 
 def init_naive_bayes():
