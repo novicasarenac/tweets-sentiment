@@ -1,27 +1,33 @@
+import re
+
 from nltk.corpus import stopwords
 from nltk.tokenize.casual import TweetTokenizer
 from nltk.tokenize import RegexpTokenizer
+from pipe import Pipe
 
-import re
 
-
+@Pipe
 def remove_stopwords(tokenized_text):
     return [word for word in tokenized_text if word not in stopwords.words('english')]
 
 
+@Pipe
 def remove_urls(tokenized_text):
     reg = re.compile('http[s]?://|www.(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
     return [word for word in tokenized_text if not reg.match(word)]
 
 
+@Pipe
 def remove_numbers(tokenized_text):
     return [word for word in tokenized_text if not word.isdigit()]
 
 
+@Pipe
 def remove_multiple_occurrence(tokenized_text):
     return [re.sub(r'(.)\1+', r'\1\1', word) for word in tokenized_text]
 
 
+@Pipe
 def process_hashtags(tokenized_text):
     reg = re.compile('(?:^|\s)[＃#]{1}(\w+)')
     without_hashtags = []
@@ -40,14 +46,14 @@ def remove_special_characters(tweet):
 
 
 def clear_data(tweet):
-    # remove tags and reduce length
     tokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
     tokens = tokenizer.tokenize(tweet)
-    without_urls = remove_urls(tokens)
-    with_processed_hashtags = process_hashtags(without_urls)
-    without_stopwords = remove_stopwords(with_processed_hashtags)
-    without_numbers = remove_numbers(without_stopwords)
-    clean_tweet = remove_multiple_occurrence(without_numbers)
+    clean_tweet = tokens \
+            | remove_urls \
+            | process_hashtags \
+            | remove_stopwords \
+            | remove_numbers \
+            | remove_multiple_occurrence
     return ' '.join(clean_tweet)
 
 

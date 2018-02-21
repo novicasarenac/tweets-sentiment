@@ -1,1 +1,2 @@
 include tweets_sentiment/data/*.txt
+include tweets_sentiment/data/*.csv
