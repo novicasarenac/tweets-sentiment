@@ -1,13 +1,10 @@
-from os import path
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
+from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
 
 import pandas as pd
 import words_embedding as we
 import train_and_eval as te
-
-full_path = path.dirname(path.abspath(__file__ + "/../"))
-dataset = path.join(full_path, 'data/preprocessed_dataset.csv')
 
 
 def init_naive_bayes():
@@ -20,7 +17,7 @@ def get_sentiment(classifier, vectorizer, tweet):
 
 
 def read_data():
-    data = pd.read_csv(dataset)
+    data = pd.read_csv(PREPROCESSED_DATASET)
     labels = data['sentiment']
     tweets = data['tweet'].values.astype('U')
 

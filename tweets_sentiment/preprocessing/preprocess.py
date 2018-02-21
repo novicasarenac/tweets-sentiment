@@ -1,17 +1,13 @@
-from os import path
 import pandas as pd
 from tweets_sentiment.data_preprocessing import clear_data as cd
 from tweets_sentiment.data_preprocessing import data_transform as dt
-
-
-FULL_PATH = path.dirname(path.abspath(__file__ + "/../"))
-DATASET_DESTINATION = path.join(FULL_PATH, 'data/new_data.csv')
-PREPROCESSED_DATASET = path.join(FULL_PATH, 'data/preprocessed_dataset.csv')
+from tweets_sentiment.data_preprocessing.constants import DATASET_DESTINATION
+from tweets_sentiment.data_preprocessing.constants import PREPROCESSED_DATASET
 
 
 def preprocess_data():
     data = pd.read_csv(DATASET_DESTINATION)
-    preprocessed_data = pd.DataFrame(columns = ['sentiment', 'tweet'])
+    preprocessed_data = pd.DataFrame(columns=['sentiment', 'tweet'])
     for index, row in data.iterrows():
         tweet = row['tweet']
         tweet = dt.transform_post(cd.clear_data(tweet))

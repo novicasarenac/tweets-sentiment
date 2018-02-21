@@ -1,4 +1,11 @@
+from os import path
+
 SLANG_FILE_PATH = 'data/slang.txt'
+
+FULL_PATH = path.dirname(path.abspath(__file__ + "/../"))
+DATASET_DESTINATION = path.join(FULL_PATH, 'data/dataset.csv')
+PREPROCESSED_DATASET = path.join(FULL_PATH, 'data/preprocessed_dataset.csv')
+FULL_DATASET = path.join(FULL_PATH, 'data/raw_data.csv')
 
 POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';)', ':-)', ':-]',
                           ':=]', ':-D', ':-))', '=)', ':-}', ':}', '=D'])

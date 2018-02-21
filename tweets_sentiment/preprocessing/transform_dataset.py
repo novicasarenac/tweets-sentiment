@@ -1,11 +1,4 @@
 import pandas as pd
-from os import path
-
-
-FULL_PATH = path.dirname(path.abspath(__file__ + "/../"))
-FULL_DATASET = path.join(FULL_PATH, 'data/text_emotion.csv')
-DATASET_DESTINATION = path.join(FULL_PATH, 'data/new_data.csv')
-
 
 SENTIMENTS = {
     'positive': [
