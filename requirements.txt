@@ -5,3 +5,4 @@ nltk
 sklearn
 pandas
 pyenchant
+pipe
