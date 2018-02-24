@@ -18,8 +18,6 @@ def init_svm(params=None):
     else:
         return LinearSVC()
 
-    # return LinearSVC(max_iter=1500, verbose=15, C=0.01)
-
 
 def read_data():
     data = pd.read_csv(PREPROCESSED_DATASET)

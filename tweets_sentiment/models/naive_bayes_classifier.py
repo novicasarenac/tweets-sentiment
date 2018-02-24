@@ -1,6 +1,8 @@
 import pandas as pd
 import embedding as we
 import train_and_eval as te
+import numpy as np
+import cross_validation as cv
 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
@@ -24,10 +26,27 @@ def read_data():
     return labels, tweets
 
 
+def estimate_parameters(nb, feature_vector, y_train):
+    tuned_parameters = [
+        {'alpha': np.linspace(0.01, 3.0, 100)},
+    ]
+    return cv.perform_cross_validation(nb, tuned_parameters, 'nb', feature_vector, y_train)
+
+
+def read_params():
+    with open('nb_parameters.json', 'r') as f:
+        parameters = json.load(f)
+    return parameters
+
+
 if __name__ == '__main__':
     nb = init_naive_bayes()
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size=0.33)
     feature_vector, vectorizer = we.make_bag_of_words(X_train)
+
+    params = estimate_parameters(nb, feature_vector.toarray(), y_train)
+    nb.set_params(**params)
+
     classifier = te.train(nb, feature_vector.toarray(), y_train)
     te.evaluate(classifier, vectorizer, X_train, X_test, y_train, y_test)
