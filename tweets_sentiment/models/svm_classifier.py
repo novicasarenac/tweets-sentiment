@@ -5,9 +5,11 @@ import numpy as np
 import cross_validation as cv
 import json
 
+from os import path
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
+from tweets_sentiment.preprocessing.constants import FULL_PATH
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
 
@@ -36,7 +38,8 @@ def estimate_parameters(svm, feature_vector, y_train):
 
 
 def read_params():
-    with open('svm_parameters.json', 'r') as f:
+    filepath = path.join(FULL_PATH, 'data/svm_parameters.json')
+    with open(filepath, 'r') as f:
         parameters = json.load(f)
     return parameters
 
