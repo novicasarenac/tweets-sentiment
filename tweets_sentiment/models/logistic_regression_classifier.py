@@ -29,6 +29,30 @@ def read_data():
     return labels, tweets
 
 
+def estimate_parameters(logistic_regression, feature_vector, y_train):
+    tuned_parameters = [
+        {
+            'solver': ['lbfgs'],
+            'C': np.linspace(0.001, 1.0, 25),
+            'max_iter': [1000, 1500]
+        },
+        {
+            'penalty': ['l1', 'l2'],
+            'solver': ['liblinear'],
+            'C': np.linspace(0.001, 1.0, 25),
+            'max_iter': [1000, 1500]
+        }
+    ]
+    return cv.perform_cross_validation(logistic_regression, tuned_parameters, 'lr', feature_vector, y_train)
+
+
+def read_params():
+    filepath = path.join(FULL_PATH, 'data/lr_parameters.json')
+    with open(filepath, 'r') as f:
+        parameters = json.load(f)
+    return parameters
+
+
 if __name__ == '__main__':
     logistic_regression = init_logistic_regression()
 
@@ -36,9 +60,9 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size=0.33)
     feature_vector, vectorizer = we.make_bag_of_words(X_train)
 
-    # params = estimate_parameters(svm, feature_vector.toarray(), y_train)
-    # params = read_params()
-    # logistic_regression.set_params(**params)
+    # params = estimate_parameters(logistic_regression, feature_vector.toarray(), y_train)
+    params = read_params()
+    logistic_regression.set_params(**params)
 
     classifier = te.train(logistic_regression, feature_vector.toarray(), y_train)
 

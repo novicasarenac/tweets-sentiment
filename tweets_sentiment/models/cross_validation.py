@@ -13,7 +13,7 @@ def save_to_file(classifier_name, clf):
 
 def perform_cross_validation(classifier, parameters, classifier_name, feature_vector, y_train):
     print('===> Estimating parameters')
-    clf = GridSearchCV(classifier, parameters, cv=5, verbose=2)
+    clf = GridSearchCV(classifier, parameters, verbose=2)
     te.train(clf, feature_vector, y_train)
     save_to_file(classifier_name, clf)
     print('===> Best params for: %s:'%classifier_name)
