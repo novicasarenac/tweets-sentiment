@@ -10,8 +10,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
 from tweets_sentiment.preprocessing.constants import FULL_PATH
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report
 
 
 def init_logistic_regression(params=None):

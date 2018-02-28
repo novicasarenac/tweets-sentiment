@@ -55,9 +55,3 @@ def clear_data(tweet):
             | remove_numbers \
             | remove_multiple_occurrence
     return ' '.join(clean_tweet)
-
-
-if __name__ == "__main__":
-    example = "she has the same 10 :() car Volvo : as @Marco ooookkkkk #ferenc #car http://www.google.com"
-    processed_ex = clear_data(example)
-    print(remove_special_characters(processed_ex))

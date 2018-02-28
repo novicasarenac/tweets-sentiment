@@ -5,6 +5,7 @@ from tweets_sentiment.preprocessing.constants import FULL_PATH
 from os import path
 from sklearn.model_selection import GridSearchCV
 
+
 def save_to_file(classifier_name, clf):
     filepath = path.join(FULL_PATH, 'data/%s_parameters.json'%classifier_name)
     with open(filepath, 'w') as f:
@@ -17,5 +18,5 @@ def perform_cross_validation(classifier, parameters, classifier_name, feature_ve
     te.train(clf, feature_vector, y_train)
     save_to_file(classifier_name, clf)
     print('===> Best params for: %s:'%classifier_name)
-    print(clf.best_params_)
+    print(clf.best_params)
     return clf.best_params_

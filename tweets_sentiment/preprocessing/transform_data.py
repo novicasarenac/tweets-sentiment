@@ -3,6 +3,7 @@ import nltk.tokenize
 import enchant
 
 from os import path
+from pipe import Pipe
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 from tweets_sentiment.preprocessing.constants import POSITIVE_EMOTICONS
@@ -20,33 +21,74 @@ def init_tokenizer(preserve_case=False, strip_handles=False, reduce_len=True):
 
 
 def transform_post(twitter_post):
-    tokens = []
     tokenizer = init_tokenizer()
     slang_dictionary = load_sleng_dict()
     checker_dictionary = enchant.Dict('en_US')
-    for token in tokenizer.tokenize(twitter_post):
-        process_token = transform_slang_words(slang_dictionary,
-                                              emoticon_transformation(token))
-        final_token = transform_shortwords(process_token)
-        correct_token = spell_checking(final_token, checker_dictionary)
-        full_words = remove_one_character_words(correct_token)
-        tokens.append(full_words)
-
-    pos_tag_tokens = pos_tagging(tokenizer.tokenize(' '.join(tokens)))
-    return lemmatization(pos_tag_tokens)
+    tokens = tokenizer.tokenize(twitter_post)
+    transformed_tweet = tokens \
+            | emoticon_transformation \
+            | transform_slang_words(slang_dictionary) \
+            | transform_shortwords \
+            | lemmatization \
+            | spell_checker(checker_dictionary)
+    return ' '.join(transformed_tweet)
 
 
-def lemmatization(pos_tag_sentence):
+@Pipe
+def lemmatization(tokenized_text):
     lemmatizer = WordNetLemmatizer()
     lemmatized_words = []
+    pos_tag_sentence = nltk.pos_tag(tokenized_text)
     for pos_tuple in pos_tag_sentence:
         lemmatized_words.append(lemmatizer.lemmatize(pos_tuple[0], transform_tag(pos_tuple[1])))
 
     return ' '.join(lemmatized_words)
 
 
-def pos_tagging(tokenized_post):
-    return nltk.pos_tag(tokenized_post)
+@Pipe
+def emoticon_transformation(tokenized_text):
+    return [emoticon_check(token) for token in tokenized_text]
+
+
+@Pipe
+def transform_slang_words(tokenized_text, slang_dictionary):
+    return [slang_dictionary[token] if token in slang_dictionary else token for token in tokenized_text]
+
+
+@Pipe
+def transform_shortwords(tokenized_text):
+    return [SHORT_WORDS[token.lower()] if token.lower() in SHORT_WORDS else token for token in tokenized_text]
+
+
+@Pipe
+def spell_checker(tokenized_text, dictionary):
+    return [check_dictionary(token, dictionary) for token in tokenized_text]
+
+
+@Pipe
+def remove_one_character_words(tokenized_text):
+    return [check_one_char_words(token) for token in tokenized_text]
+
+
+def load_sleng_dict():
+    basepath = path.dirname(path.abspath(__file__ + "/../"))
+    full_path = path.join(basepath, SLANG_FILE_PATH)
+    slang_dictionary = {}
+    with open(full_path, 'r') as slang_file:
+        for line in slang_file:
+            splits = line.replace('\t', ' ').split(' ', 1)
+            slang_dictionary.update({splits[0]: splits[1].strip()})
+
+    return slang_dictionary
+
+
+def emoticon_check(token):
+    if token in POSITIVE_EMOTICONS:
+        return POSITIVE_WORD
+    elif token in NEGATIVE_EMOTICONS:
+        return NEGATIVE_WORD
+
+    return token
 
 
 def transform_tag(tag):
@@ -62,42 +104,7 @@ def transform_tag(tag):
         return wordnet.NOUN
 
 
-def emoticon_transformation(token):
-    if token in POSITIVE_EMOTICONS:
-        return POSITIVE_WORD
-    elif token in NEGATIVE_EMOTICONS:
-        return NEGATIVE_WORD
-
-    return token
-
-
-def transform_slang_words(slang_dictionary, token):
-    if token in slang_dictionary:
-        return slang_dictionary[token]
-    else:
-        return token
-
-
-def load_sleng_dict():
-    basepath = path.dirname(path.abspath(__file__ + "/../"))
-    full_path = path.join(basepath, SLANG_FILE_PATH)
-    slang_dictionary = {}
-    with open(full_path, 'r') as slang_file:
-        for line in slang_file:
-            splits = line.replace('\t', ' ').split(' ', 1)
-            slang_dictionary.update({splits[0]: splits[1].strip()})
-
-    return slang_dictionary
-
-
-def transform_shortwords(token):
-    if token.lower() in SHORT_WORDS:
-        return SHORT_WORDS[token.lower()]
-    else:
-        return token
-
-
-def spell_checking(token, dictionary):
+def check_dictionary(token, dictionary):
     if(dictionary.check(token)):
         return token
     else:
@@ -105,7 +112,7 @@ def spell_checking(token, dictionary):
         return token if len(suggest_arr) == 0 else suggest_arr[0]
 
 
-def remove_one_character_words(token):
+def check_one_char_words(token):
     if(len(token) == 1):
         return '' if "i" not in token else token
 
