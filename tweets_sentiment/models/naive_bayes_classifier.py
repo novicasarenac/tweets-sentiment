@@ -1,26 +1,13 @@
-import pandas as pd
-import json
-
-from os import path
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.model_selection import train_test_split
-from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
-from tweets_sentiment.preprocessing.constants import FULL_PATH
 from pipeline import make_pipeline
 from cross_validation import search_params
+from train_test_split import read_data
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
 
 
 def get_sentiment(classifier, vectorizer, tweet):
     transformed_tweet = vectorizer.transform([tweet]).toarray()
     return classifier.predict(transformed_tweet)
-
-
-def read_data():
-    data = pd.read_csv(PREPROCESSED_DATASET)
-    labels = data['sentiment']
-    tweets = data['tweet'].values.astype('U')
-
-    return labels, tweets
 
 
 def estimate_parameters(nb_pipeline, feature_vector, y_train):
@@ -31,13 +18,6 @@ def estimate_parameters(nb_pipeline, feature_vector, y_train):
         'clf__fit_prior': (True, False),
         }
     search_params(nb_pipeline, parameters, 'nb', feature_vector, y_train)
-
-
-def read_params():
-    filepath = path.join(FULL_PATH, 'data/nb_parameters.json')
-    with open(filepath, 'r') as f:
-        parameters = json.load(f)
-    return parameters
 
 
 if __name__ == '__main__':
