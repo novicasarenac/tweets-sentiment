@@ -3,6 +3,7 @@ import pandas as pd
 
 from os import path
 from pipeline import make_pipeline
+from xgboost import XGBClassifier
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
@@ -53,14 +54,17 @@ def load_pipelines():
     nb_pipeline = make_pipeline(MultinomialNB())
     lr_pipeline = make_pipeline(LogisticRegression())
     svm_pipeline = make_pipeline(LinearSVC())
+    xgb_pipeline = make_pipeline(XGBClassifier())
 
     print("===> Setting parameters...")
     nb_pipeline.set_params(**read_params("data/nb_parameters.json"))
     lr_pipeline.set_params(**read_params("data/lr_parameters.json"))
     svm_pipeline.set_params(**read_params("data/svm_parameters.json"))
+    xgb_pipeline.set_params(**read_params("data/xgb_parameters.json"))
     pipelines = {'Naive Bayes': nb_pipeline,
                  'Logistic Regression': lr_pipeline,
                  'Linear SVM': svm_pipeline,
+                 'XGBooster': xgb_pipeline,
                  }
     return pipelines
 

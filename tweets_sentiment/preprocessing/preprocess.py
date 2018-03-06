@@ -1,9 +1,18 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from tweets_sentiment.preprocessing import transform_data as dt
 from tweets_sentiment.preprocessing.constants import DATASET_DESTINATION
 from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
 from tweets_sentiment.preprocessing import clear_data as cd
+
+
+def check_skewness():
+    data = pd.read_csv(PREPROCESSED_DATASET)
+    df = pd.DataFrame(data)
+    print(df.groupby('sentiment').size())
+    plt.hist(df.iloc[:, 1])
+    plt.show()
 
 
 def preprocess_data():
@@ -19,4 +28,5 @@ def preprocess_data():
 
 
 if __name__ == '__main__':
-    preprocess_data()
+    # preprocess_data()
+    check_skewness()

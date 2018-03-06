@@ -1,0 +1,1 @@
+{"clf__booster": "gblinear", "clf__learning_rate": 0.1, "clf__n_estimators": 150, "vect__max_df": 0.25, "vect__ngram_range": [1, 2]}

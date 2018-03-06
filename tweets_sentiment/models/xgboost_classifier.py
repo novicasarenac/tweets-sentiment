@@ -1,27 +1,26 @@
 from pipeline import make_pipeline
 from cross_validation import search_params
 from train_and_eval import read_data
-from sklearn.svm import LinearSVC
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 
 
-def estimate_parameters(svm_pipeline, feature_vector, y_train):
+def estimate_parameters(pipeline, feature_vector, y_train):
     parameters = {
             'vect__max_df': (0.25, 0.5, 0.75, 1.0),
             'vect__ngram_range': ((1, 1), (1, 2), (2, 2)),
-            'clf__C': (0.001, 0.01, 0.05, 1.0),
-            'clf__max_iter': (100, 150, 200),
-            'clf__loss': ('hinge', 'squared_hinge'),
+            'clf__learning_rate': (0.1, 0.5, 1.0),
+            'clf__n_estimators': (150, 200),
+            'clf__booster': ('gbtree', 'gblinear', 'dart'),
         }
 
-    search_params(svm_pipeline, parameters, 'svm', feature_vector, y_train)
+    search_params(pipeline, parameters, 'xgb', feature_vector, y_train)
 
 
 if __name__ == '__main__':
-    svm_pipeline = make_pipeline(LinearSVC(), True)
-
+    xgb_pipeline = make_pipeline(XGBClassifier())
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets,
                                                         labels,
                                                         test_size=0.33)
-    estimate_parameters(svm_pipeline, X_train, y_train)
+    estimate_parameters(xgb_pipeline, X_train, y_train)
