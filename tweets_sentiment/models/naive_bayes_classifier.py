@@ -1,6 +1,6 @@
 from pipeline import make_pipeline
 from cross_validation import search_params
-from train_test_split import read_data
+from train_and_eval import read_data
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 
@@ -21,7 +21,7 @@ def estimate_parameters(nb_pipeline, feature_vector, y_train):
 
 
 if __name__ == '__main__':
-    nb_pipeline = make_pipeline(MultinomialNB())
+    nb_pipeline = make_pipeline(MultinomialNB(), True)
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets,
                                                         labels,
