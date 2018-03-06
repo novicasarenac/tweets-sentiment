@@ -1,62 +1,27 @@
-import embedding as we
-import train_and_eval as te
-import pandas as pd
-import numpy as np
-import cross_validation as cv
-import json
-
-from os import path
+from pipeline import make_pipeline
+from cross_validation import search_params
+from train_and_eval import read_data
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
-from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
-from tweets_sentiment.preprocessing.constants import FULL_PATH
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report
 
 
-def init_svm(params=None):
-    if params:
-        return LinearSVC(params)
-    else:
-        return LinearSVC()
+def estimate_parameters(svm_pipeline, feature_vector, y_train):
+    parameters = {
+            'vect__max_df': (0.25, 0.5, 0.75, 1.0),
+            'vect__ngram_range': ((1, 1), (1, 2), (2, 2)),
+            'clf__C': (0.001, 0.01, 0.05, 1.0),
+            'clf__max_iter': (100, 150, 200),
+            'clf__loss': ('hinge', 'squared_hinge'),
+        }
 
-
-def read_data():
-    data = pd.read_csv(PREPROCESSED_DATASET)
-    labels = data['sentiment']
-    tweets = data['tweet'].values.astype('U')
-
-    return labels, tweets
-
-
-def estimate_parameters(svm, feature_vector, y_train):
-    tuned_parameters = [
-        {'C': np.linspace(0.001, 1.0, 50),
-        'max_iter': [1000,1500,2000]},
-    ]
-    return cv.perform_cross_validation(svm, tuned_parameters, 'svm', feature_vector, y_train)
-
-
-def read_params():
-    filepath = path.join(FULL_PATH, 'data/svm_parameters.json')
-    with open(filepath, 'r') as f:
-        parameters = json.load(f)
-    return parameters
+    search_params(svm_pipeline, parameters, 'svm', feature_vector, y_train)
 
 
 if __name__ == '__main__':
-    svm = init_svm()
+    svm_pipeline = make_pipeline(LinearSVC(), True)
 
     labels, tweets = read_data()
-    X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size=0.33)
-    feature_vector, vectorizer = we.make_bag_of_words(X_train)
-
-    # params = estimate_parameters(svm, feature_vector.toarray(), y_train)
-    params = read_params()
-    svm.set_params(**params)
-
-    classifier = te.train(svm, feature_vector.toarray(), y_train)
-
-    transformed_tweets = vectorizer.transform(X_test).toarray()
-    y_true, y_pred = y_test, classifier.predict(transformed_tweets)
-    te.evaluate(classifier, vectorizer, X_train, X_test, y_train, y_test)
+    X_train, X_test, y_train, y_test = train_test_split(tweets,
+                                                        labels,
+                                                        test_size=0.33)
+    params = estimate_parameters(svm_pipeline, X_train, y_train)
