@@ -1,1 +1,1 @@
-{"alpha": 4.386703910614525}
+{"clf__alpha": 15.0, "clf__fit_prior": false, "vect__max_df": 0.25, "vect__ngram_range": [1, 1]}

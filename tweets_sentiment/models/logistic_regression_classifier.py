@@ -1,69 +1,26 @@
-import embedding as we
-import train_and_eval as te
-import pandas as pd
-import numpy as np
-import cross_validation as cv
-import json
-
-from os import path
+from pipeline import make_pipeline
+from cross_validation import search_params
+from train_and_eval import read_data
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
-from tweets_sentiment.preprocessing.constants import FULL_PATH
 
 
-def init_logistic_regression(params=None):
-    if params:
-        return LogisticRegression(params)
-    else:
-        return LogisticRegression()
-
-
-def read_data():
-    data = pd.read_csv(PREPROCESSED_DATASET)
-    labels = data['sentiment']
-    tweets = data['tweet'].values.astype('U')
-
-    return labels, tweets
-
-
-def estimate_parameters(logistic_regression, feature_vector, y_train):
-    tuned_parameters = [
-        {
-            'solver': ['lbfgs'],
-            'C': np.linspace(0.001, 1.0, 25),
-            'max_iter': [1000, 1500]
-        },
-        {
-            'penalty': ['l1', 'l2'],
-            'solver': ['liblinear'],
-            'C': np.linspace(0.001, 1.0, 25),
-            'max_iter': [1000, 1500]
+def estimate_parameters(lr_pipeline, feature_vector, y_train):
+    parameters = {
+            'vect__max_df': (0.25, 0.5, 0.75, 1.0),
+            'vect__ngram_range': ((1, 1), (1, 2), (2, 2)),
+            'clf__solver': ('liblinear', 'saga'),
+            'clf__C': (0.01, 0.05, 0.1, 0.5, 1.0),
+            'clf__max_iter': (150, 200),
+            'clf__penalty': ('l1', 'l2'),
         }
-    ]
-    return cv.perform_cross_validation(logistic_regression, tuned_parameters, 'lr', feature_vector, y_train)
-
-
-def read_params():
-    filepath = path.join(FULL_PATH, 'data/lr_parameters.json')
-    with open(filepath, 'r') as f:
-        parameters = json.load(f)
-    return parameters
+    search_params(lr_pipeline, parameters, 'lr', feature_vector, y_train)
 
 
 if __name__ == '__main__':
-    logistic_regression = init_logistic_regression()
-
+    logistic_pipeline = make_pipeline(LogisticRegression())
     labels, tweets = read_data()
-    X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size=0.33)
-    feature_vector, vectorizer = we.make_bag_of_words(X_train)
-
-    # params = estimate_parameters(logistic_regression, feature_vector.toarray(), y_train)
-    params = read_params()
-    logistic_regression.set_params(**params)
-
-    classifier = te.train(logistic_regression, feature_vector.toarray(), y_train)
-
-    transformed_tweets = vectorizer.transform(X_test).toarray()
-    y_true, y_pred = y_test, classifier.predict(transformed_tweets)
-    te.evaluate(classifier, vectorizer, X_train, X_test, y_train, y_test)
+    X_train, X_test, y_train, y_test = train_test_split(tweets,
+                                                        labels,
+                                                        test_size=0.33)
+    estimate_parameters(logistic_pipeline, X_train, y_train)
