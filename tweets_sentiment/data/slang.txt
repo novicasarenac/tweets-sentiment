@@ -31,6 +31,8 @@ bak	back at the keyboard
 bbl	bee back later
 bday	birthday
 becuz	because
+bc because
+bz because
 bent	angry
 bestie	best friend
 besty	best friend
@@ -238,6 +240,7 @@ sux	sucks
 swag	style
 taze	irritate
 tba	to be announced
+tmrw tomorrow
 tbfu	too bad for you
 tbc	to be continued
 tbd	to be determined

@@ -1,6 +1,5 @@
 import nltk
 import nltk.tokenize
-import enchant
 
 from os import path
 from pipe import Pipe
@@ -20,17 +19,16 @@ def init_tokenizer(preserve_case=False, strip_handles=False, reduce_len=True):
                                         reduce_len)
 
 
-def transform_post(twitter_post):
-    tokenizer = init_tokenizer()
-    slang_dictionary = load_sleng_dict()
-    checker_dictionary = enchant.Dict('en_US')
+def transform_post(twitter_post, tokenizer, slang_dict, checker):
     tokens = tokenizer.tokenize(twitter_post)
     transformed_tweet = tokens \
             | emoticon_transformation \
-            | transform_slang_words(slang_dictionary) \
+            | transform_slang_words(slang_dict) \
             | transform_shortwords \
-            | lemmatization \
-            | spell_checker(checker_dictionary)
+            | remove_special_characters \
+            | spell_checker(checker) \
+            | remove_one_character_words
+            # | lemmatization
     return ' '.join(transformed_tweet)
 
 
@@ -42,7 +40,7 @@ def lemmatization(tokenized_text):
     for pos_tuple in pos_tag_sentence:
         lemmatized_words.append(lemmatizer.lemmatize(pos_tuple[0], transform_tag(pos_tuple[1])))
 
-    return ' '.join(lemmatized_words)
+    return lemmatized_words
 
 
 @Pipe
@@ -67,7 +65,12 @@ def spell_checker(tokenized_text, dictionary):
 
 @Pipe
 def remove_one_character_words(tokenized_text):
-    return [check_one_char_words(token) for token in tokenized_text]
+    return list(filter(None, [check_one_char_words(token) for token in tokenized_text]))
+
+
+@Pipe
+def remove_special_characters(tokenized_text):
+    return [token.lower() for token in tokenized_text if token.isalpha()]
 
 
 def load_sleng_dict():

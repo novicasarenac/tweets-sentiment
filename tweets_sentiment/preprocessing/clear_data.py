@@ -2,7 +2,6 @@ import re
 
 from nltk.corpus import stopwords
 from nltk.tokenize.casual import TweetTokenizer
-from nltk.tokenize import RegexpTokenizer
 from pipe import Pipe
 
 
@@ -37,12 +36,6 @@ def process_hashtags(tokenized_text):
         else:
             without_hashtags.append(word)
     return without_hashtags
-
-
-def remove_special_characters(tweet):
-    tokenizer = RegexpTokenizer(r'\w+')
-    tokens = tokenizer.tokenize(tweet)
-    return ' '.join(tokens)
 
 
 def clear_data(tweet):
