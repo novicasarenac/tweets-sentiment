@@ -7,11 +7,13 @@ DATASET_DESTINATION = path.join(FULL_PATH, 'data/dataset.csv')
 PREPROCESSED_DATASET = path.join(FULL_PATH, 'data/preprocessed_dataset.csv')
 FULL_DATASET = path.join(FULL_PATH, 'data/raw_data.csv')
 
-POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';)', ':-)', ':-]',
-                          ':=]', ':-D', ':-))', '=)', ':-}', ':}', '=D'])
+POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';-)', ';)',
+                          ':-)', ':-]', ':=]', ':-D', ':-))', '=)', ':-}',
+                          ':}', '=D'])
 
-NEGATIVE_EMOTICONS = set([':(', '):', '=(', ':O', '=O', ':\\', ':-X', ':-|',
-                          ':\'(', ':-\'(', ':[', ':-[', ':-(', ':@', ':P', ':-P'])
+NEGATIVE_EMOTICONS = set([':(', '):', '=(', ':O', '=O', ':\\', ':-X', ':|',
+                          ':-|', ':\'(', ':-\'(', ':[', ':-[', ':-(', ':@',
+                          ':P', ':-P', ':/'])
 
 POSITIVE_WORD = 'happy'
 NEGATIVE_WORD = 'sad'
@@ -19,19 +21,25 @@ NEGATIVE_WORD = 'sad'
 SHORT_WORDS = {
     "ain't": "am not / are not",
     "aren't": "are not / am not",
+    "cant": "cannot",
     "can't": "cannot",
     "can't've": "cannot have",
-    "'cause": "because",
+    "cause": "because",
     "could've": "could have",
     "couldn't": "could not",
     "couldn't've": "could not have",
     "didn't": "did not",
+    "didnt": "did not",
+    "doesnt": "does not",
+    "dont": "do not",
     "doesn't": "does not",
     "don't": "do not",
     "hadn't": "had not",
     "hadn't've": "had not have",
     "hasn't": "has not",
+    "hasnt": "has not",
     "haven't": "have not",
+    "havent": "have not",
     "he'd": "he had / he would",
     "he'd've": "he would have",
     "he'll": "he shall / he will",
@@ -45,6 +53,7 @@ SHORT_WORDS = {
     "i'd've": "I would have",
     "i'll": "I shall / I will",
     "i'll've": "I shall have / I will have",
+    "im": "I am",
     "i'm": "I am",
     "i've": "I have",
     "isn't": "is not",
