@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-from keras.layers import Conv1D, Dense, Dropout, Flatten
+from keras.layers import Conv1D, Conv2D, Dense, Dropout, Flatten, MaxPooling1D, GlobalMaxPooling1D
 from keras.layers.embeddings import Embedding
 from keras.models import Sequential
 from keras.preprocessing.text import Tokenizer
@@ -9,6 +9,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from tweets_sentiment.preprocessing.constants import GLOVE_PATH, DATASET_DESTINATION
 from sklearn.model_selection import train_test_split
+from keras import regularizers
 
 
 EMBEDDING_DIMENSION = 100
@@ -61,13 +62,12 @@ def create_embedding_matrix(word_indices, embeddings):
 def get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH):
     model = Sequential()
     model.add(Embedding(WORDS_NUM, EMBEDDING_DIMENSION, weights=[embedding_matrix], input_length=MAX_SEQUENCE_LENGTH, trainable=False))
-    model.add(Conv1D(64, 3, padding='same'))
-    model.add(Conv1D(32, 3, padding='same'))
-    model.add(Conv1D(16, 3, padding='same'))
-    model.add(Flatten())
-    model.add(Dropout(0.2))
+    model.add(Conv1D(128, 3, padding='same'))
+    model.add(GlobalMaxPooling1D())
+    # model.add(Flatten())
+    model.add(Dropout(0.7))
     model.add(Dense(180, activation='sigmoid'))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.7))
     model.add(Dense(1, activation='sigmoid'))
 
     return model
@@ -91,7 +91,7 @@ def train_cnn():
 
     model = get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=128, epochs=10, validation_data=(X_test, y_test), verbose=2)
+    model.fit(X_train, y_train, batch_size=128, epochs=40, validation_data=(X_test, y_test), verbose=2)
 
     # Evaluation on the test set
     scores = model.evaluate(X_test, y_test, verbose=0)
