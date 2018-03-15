@@ -6,9 +6,10 @@ FULL_PATH = path.dirname(path.abspath(__file__ + "/../"))
 DATASET_DESTINATION = path.join(FULL_PATH, 'data/dataset.csv')
 PREPROCESSED_DATASET = path.join(FULL_PATH, 'data/preprocessed_dataset.csv')
 FULL_DATASET = path.join(FULL_PATH, 'data/raw_data.csv')
+GLOVE_PATH = path.join(FULL_PATH, 'data/glove-twitter-100')
+
 LARGE_DATASET_RAW = path.join(FULL_PATH, 'data/SentimentAnalysisDataset.csv')
 LARGE_DATASET_DESTINATION = path.join(FULL_PATH, 'data/large_dataset.csv')
-GLOVE_PATH = path.join(FULL_PATH, 'data/glove.twitter.27B.100d.txt')
 
 POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';-)', ';)',
                           ':-)', ':-]', ':=]', ':-D', ':-))', '=)', ':-}',
