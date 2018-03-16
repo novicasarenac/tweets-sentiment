@@ -4,3 +4,5 @@ __pycharm__/
 *.egg-info/
 build/
 dist/
+data/glove-twitter-100
+data/word2vec-google-news-300

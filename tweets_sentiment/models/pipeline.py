@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import Pipeline
 
 
-def make_pipeline(classifier, tf_idf=False):
+def bag_of_words(classifier, tf_idf=False):
     if tf_idf:
         steps = [('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),

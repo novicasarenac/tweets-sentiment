@@ -1,4 +1,4 @@
-from pipeline import make_pipeline
+from pipeline import bag_of_words
 from cross_validation import search_params
 from train_and_eval import read_data
 from xgboost import XGBClassifier
@@ -18,7 +18,7 @@ def estimate_parameters(pipeline, feature_vector, y_train):
 
 
 if __name__ == '__main__':
-    xgb_pipeline = make_pipeline(XGBClassifier())
+    xgb_pipeline = bag_of_words(XGBClassifier())
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets,
                                                         labels,

@@ -1,4 +1,4 @@
-from pipeline import make_pipeline
+from pipeline import bag_of_words
 from cross_validation import search_params
 from train_and_eval import read_data
 from sklearn.svm import LinearSVC
@@ -18,7 +18,7 @@ def estimate_parameters(svm_pipeline, feature_vector, y_train):
 
 
 if __name__ == '__main__':
-    svm_pipeline = make_pipeline(LinearSVC(), True)
+    svm_pipeline = bag_of_words(LinearSVC(), True)
 
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets,

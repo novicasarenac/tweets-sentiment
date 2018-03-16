@@ -2,7 +2,7 @@ import json
 import pandas as pd
 
 from os import path
-from pipeline import make_pipeline
+from pipeline import bag_of_words
 from xgboost import XGBClassifier
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
@@ -51,16 +51,17 @@ def evaluate(pipeline, X_train, X_test, y_train, y_test):
 def load_pipelines():
     print("===> Loading all pipelines...")
 
-    nb_pipeline = make_pipeline(MultinomialNB())
-    lr_pipeline = make_pipeline(LogisticRegression())
-    svm_pipeline = make_pipeline(LinearSVC())
-    xgb_pipeline = make_pipeline(XGBClassifier())
+    nb_pipeline = bag_of_words(MultinomialNB())
+    lr_pipeline = bag_of_words(LogisticRegression())
+    svm_pipeline = bag_of_words(LinearSVC())
+    xgb_pipeline = bag_of_words(XGBClassifier())
 
     print("===> Setting parameters...")
     nb_pipeline.set_params(**read_params("data/nb_parameters.json"))
     lr_pipeline.set_params(**read_params("data/lr_parameters.json"))
     svm_pipeline.set_params(**read_params("data/svm_parameters.json"))
     xgb_pipeline.set_params(**read_params("data/xgb_parameters.json"))
+
     pipelines = {'Naive Bayes': nb_pipeline,
                  'Logistic Regression': lr_pipeline,
                  'Linear SVM': svm_pipeline,

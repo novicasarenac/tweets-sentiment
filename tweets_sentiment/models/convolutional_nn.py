@@ -1,15 +1,14 @@
-import os
 import numpy as np
 import pandas as pd
-from keras.layers import Conv1D, Conv2D, Dense, Dropout, Flatten, MaxPooling1D, GlobalMaxPooling1D
+
+from keras.layers import Conv1D, Dense, Dropout, GlobalMaxPooling1D
 from keras.layers.embeddings import Embedding
 from keras.models import Sequential
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from keras.utils import to_categorical
-from tweets_sentiment.preprocessing.constants import GLOVE_PATH, DATASET_DESTINATION, LARGE_DATASET_DESTINATION
 from sklearn.model_selection import train_test_split
-from keras import regularizers
+from tweets_sentiment.preprocessing.constants import GLOVE_PATH
+from tweets_sentiment.preprocessing.constants import LARGE_DATASET_DESTINATION
 
 
 EMBEDDING_DIMENSION = 100
@@ -81,15 +80,18 @@ def train_cnn():
     tweets, labels = read_dataset()
     sequences, word_indices = tokenize_dataset(tweets)
 
-    MAX_SEQUENCE_LENGTH = len(max(sequences, key = lambda x: len(x)))
+    MAX_SEQUENCE_LENGTH = len(max(sequences, key=lambda x: len(x)))
     padded_sequences = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
     # labels = to_categorical(labels)
     print('===> Data shape: {}'.format(padded_sequences.shape))
     print('===> Labels shape: {}'.format(labels.shape))
 
-    X_train, X_test, y_train, y_test = train_test_split(padded_sequences, labels, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(padded_sequences,
+                                                        labels,
+                                                        test_size=0.2)
 
-    WORDS_NUM, embedding_matrix = create_embedding_matrix(word_indices, embeddings)
+    WORDS_NUM, embedding_matrix = create_embedding_matrix(word_indices,
+                                                          embeddings)
 
     model = get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
