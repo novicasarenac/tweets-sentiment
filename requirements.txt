@@ -6,4 +6,4 @@ sklearn
 pandas
 pyenchant
 pipe
-gensim
+h5py

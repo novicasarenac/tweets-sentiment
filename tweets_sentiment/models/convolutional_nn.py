@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import h5py
 
 from keras.layers import Conv1D, Dense, Dropout, GlobalMaxPooling1D
 from keras.layers.embeddings import Embedding
@@ -9,6 +10,9 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 from tweets_sentiment.preprocessing.constants import GLOVE_PATH
 from tweets_sentiment.preprocessing.constants import LARGE_DATASET_DESTINATION
+from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
+from tweets_sentiment.preprocessing.constants import CNN_MODEL
+from tweets_sentiment.preprocessing.constants import CNN_WEIGHTS
 
 
 EMBEDDING_DIMENSION = 100
@@ -23,14 +27,15 @@ def read_embeddings():
             word = values[0]
             coefs = np.asarray(values[1:], dtype='float32')
             embeddings[word] = coefs
-    print('===> Using {} embedding vectors'.format(len(embeddings)))
+    print('===> Using {} embedding vectors\n'.format(len(embeddings)))
     return embeddings
 
 
 def read_dataset():
-    data = pd.read_csv(LARGE_DATASET_DESTINATION)
-    labels = data['sentiment']
-    tweets = data['tweet'].values.astype('U')
+    data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
+
+    labels = data['Sentiment']
+    tweets = data['SentimentText']
 
     return tweets, labels
 
@@ -74,17 +79,27 @@ def get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH):
     return model
 
 
+def save_model_and_weights(model):
+    print('===> Saving model and weights\n')
+    model_json = model.to_json()
+    with open('CNNModel.json', 'w') as json_file:
+        json_file.write(model_json)
+
+    model.save_weights('weightsCNN.h5')
+
+
 def train_cnn():
-    print('===> Reading GloVe words embeddings')
+    print('===> Reading GloVe words embeddings\n')
     embeddings = read_embeddings()
+    # 1.6M tweets
     tweets, labels = read_dataset()
     sequences, word_indices = tokenize_dataset(tweets)
 
     MAX_SEQUENCE_LENGTH = len(max(sequences, key=lambda x: len(x)))
     padded_sequences = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
     # labels = to_categorical(labels)
-    print('===> Data shape: {}'.format(padded_sequences.shape))
-    print('===> Labels shape: {}'.format(labels.shape))
+    print('===> Data shape: {}\n'.format(padded_sequences.shape))
+    print('===> Labels shape: {}\n'.format(labels.shape))
 
     X_train, X_test, y_train, y_test = train_test_split(padded_sequences,
                                                         labels,
@@ -95,11 +110,13 @@ def train_cnn():
 
     model = get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=128, epochs=10, validation_data=(X_test, y_test), verbose=1)
+    model.fit(X_train, y_train, batch_size=128, epochs=5, validation_data=(X_test, y_test), verbose=1)
 
     # Evaluation on the test set
     scores = model.evaluate(X_test, y_test, verbose=0)
     print(scores[1])
+
+    save_model_and_weights(model)
 
 
 if __name__ == '__main__':

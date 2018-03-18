@@ -6,3 +6,4 @@ build/
 dist/
 data/glove-twitter-100
 data/word2vec-google-news-300
+data/weightsCNN.h5
