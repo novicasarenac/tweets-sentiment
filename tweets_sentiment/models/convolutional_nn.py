@@ -9,7 +9,6 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 from tweets_sentiment.preprocessing.constants import GLOVE_PATH
-from tweets_sentiment.preprocessing.constants import LARGE_DATASET_DESTINATION
 from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
 from tweets_sentiment.preprocessing.constants import CNN_MODEL
 from tweets_sentiment.preprocessing.constants import CNN_WEIGHTS
@@ -82,10 +81,10 @@ def get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH):
 def save_model_and_weights(model):
     print('===> Saving model and weights\n')
     model_json = model.to_json()
-    with open('CNNModel.json', 'w') as json_file:
+    with open(CNN_MODEL, 'w') as json_file:
         json_file.write(model_json)
 
-    model.save_weights('weightsCNN.h5')
+    model.save_weights(CNN_WEIGHTS)
 
 
 def train_cnn():
