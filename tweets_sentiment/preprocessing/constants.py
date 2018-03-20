@@ -12,6 +12,8 @@ LARGE_DATASET_RAW = path.join(FULL_PATH, 'data/SentimentAnalysisDataset.csv')
 LARGE_DATASET_DESTINATION = path.join(FULL_PATH, 'data/large_dataset.csv')
 CNN_MODEL = path.join(FULL_PATH, 'data/CNNModel.json')
 CNN_WEIGHTS = path.join(FULL_PATH, 'data/weightsCNN.h5')
+CHAR_CNN_MODEL = path.join(FULL_PATH, 'data/char_CNNModel.json')
+CHAR_CNN_WEIGHTS = path.join(FULL_PATH, 'data/char_weightsCNN.h5')
 
 POSITIVE_EMOTICONS = set([':)', '(:', ':]', '=]', ':D', ';-)', ';)',
                           ':-)', ':-]', ':=]', ':-D', ':-))', '=)', ':-}',

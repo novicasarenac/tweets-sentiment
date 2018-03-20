@@ -1,7 +1,10 @@
 import numpy as np
 import pandas as pd
+import h5py
 
-from tweets_sentiment.preprocessing.constants import LARGE_DATASET_DESTINATION
+from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
+from tweets_sentiment.preprocessing.constants import CHAR_CNN_MODEL
+from tweets_sentiment.preprocessing.constants import CHAR_CNN_WEIGHTS
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.layers import Conv1D, Dense, Dropout, GlobalMaxPooling1D, MaxPooling1D, Flatten
@@ -15,10 +18,10 @@ EMBEDDING_DIMENSION = 16
 
 
 def read_dataset():
-    data = pd.read_csv(LARGE_DATASET_DESTINATION, error_bad_lines=False)
+    data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
 
-    labels = data['sentiment']
-    tweets = data['tweet'].values.astype('U')
+    labels = data['Sentiment']
+    tweets = data['SentimentText']
 
     return tweets, labels
 
@@ -37,11 +40,11 @@ def tokenize_dataset(tweets):
 def get_model(CHARS_NUM, MAX_SEQUENCE_LENGTH):
     model = Sequential()
     model.add(Embedding(CHARS_NUM, EMBEDDING_DIMENSION, input_length=MAX_SEQUENCE_LENGTH, trainable=True))
-    model.add(Conv1D(256, 5, padding='same', activation='relu'))
-    model.add(MaxPooling1D(2))
     model.add(Conv1D(128, 5, padding='same', activation='relu'))
     model.add(MaxPooling1D(2))
-    model.add(Conv1D(64, 5, padding='same'))
+    model.add(Conv1D(64, 5, padding='same', activation='relu'))
+    model.add(MaxPooling1D(2))
+    model.add(Conv1D(32, 5, padding='same'))
     model.add(MaxPooling1D())
 
     model.add(Flatten())
@@ -51,6 +54,15 @@ def get_model(CHARS_NUM, MAX_SEQUENCE_LENGTH):
     model.add(Dense(2, activation='softmax'))
 
     return model
+
+
+def save_model_and_weights(model):
+    print('===> Saving model and weights\n')
+    model_json = model.to_json()
+    with open(CHAR_CNN_MODEL, 'w') as json_file:
+        json_file.write(model_json)
+
+    model.save_weights(CHAR_CNN_WEIGHTS)
 
 
 def train_cnn():
@@ -71,11 +83,13 @@ def train_cnn():
 
     model = get_model(CHARS_NUM, MAX_SEQUENCE_LENGTH)
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=128, epochs=5, validation_data=(X_test, y_test), verbose=1)
+    model.fit(X_train, y_train, batch_size=128, epochs=2, validation_split=0.1, verbose=1)
 
     # Evaluation on the test set
     scores = model.evaluate(X_test, y_test, verbose=0)
     print(scores[1])
+
+    save_model_and_weights(model)
 
 
 if __name__ == '__main__':
