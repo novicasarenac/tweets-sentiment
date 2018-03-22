@@ -15,7 +15,8 @@ from tweets_sentiment.preprocessing.constants import LARGE_DATASET_DESTINATION
 
 EMBEDDING_DIM = 300
 CELL_UNITS = 128
-BATCH_SIZE = 64
+BATCH_SIZE = 32
+VOCABULARY_SIZE = 40000
 
 
 def read_dataset():
@@ -31,10 +32,14 @@ def tokenize_dataset(tweets):
     tokenizer.fit_on_texts(tweets)
     sequences = tokenizer.texts_to_sequences(tweets)
     # dictionary word:index
-    words_indices = tokenizer.word_index
-    print('===> Number of words in dataset: {}'.format(len(words_indices)))
+    word_indices = {}
+    for key, value in tokenizer.word_index.items():
+        word_indices[key] = value
+        if value == VOCABULARY_SIZE:
+            break
+    print('===> Number of words in dataset: {}'.format(len(word_indices)))
 
-    return sequences, words_indices
+    return sequences, word_indices
 
 
 def create_embedding_matrix(word_indices, w2v_model):
@@ -55,17 +60,15 @@ def create_model(vocab_size, embedding_matrix, MAX_SEQUENCE_LENGTH):
                         input_length=MAX_SEQUENCE_LENGTH,
                         trainable=False))
     model.add(LSTM(CELL_UNITS,
-                   dropout=0.2,
-                   recurrent_dropout=0.2))
-    model.add(Dense(CELL_UNITS, activation='relu'))
-    model.add(Dropout(0.5))
+                   dropout=0.4,
+                   recurrent_dropout=0.4))
     model.add(Dense(1, activation='sigmoid'))
 
     return model
 
 
-if __name__ == "__main__":
-    print('===> Reading word2vec model')
+def train_model():
+    print('===> Reading word2vec model...')
     word2vec_model = KeyedVectors.load_word2vec_format(WORD2VEC_MODEL,
                                                        binary=True)
 
@@ -89,6 +92,7 @@ if __name__ == "__main__":
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
+    print('===> Start training neural network...')
     model.fit(X_train,
               y_train,
               batch_size=BATCH_SIZE,
@@ -97,3 +101,7 @@ if __name__ == "__main__":
 
     scores = model.evaluate(X_test, y_test, verbose=0)
     print(scores[1])
+
+
+if __name__ == "__main__":
+    train_model()
