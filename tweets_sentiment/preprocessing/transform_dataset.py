@@ -46,8 +46,8 @@ def transform_large_dataset():
     for index, tweet in data.iterrows():
         if index % 5 == 0:
             print(index)
-        if index > 150000:
-            break
+        # if index > 150000:
+        #     break
         new_data.loc[len(new_data)] = [tweet['Sentiment'], tweet['SentimentText']]
     new_data.to_csv(LARGE_DATASET_DESTINATION)
 

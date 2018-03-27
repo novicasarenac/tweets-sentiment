@@ -9,6 +9,9 @@ FULL_DATASET = path.join(FULL_PATH, 'data/raw_data.csv')
 GLOVE_PATH = path.join(FULL_PATH, 'data/glove-twitter-100')
 WORD2VEC_MODEL = path.join(FULL_PATH, 'data/word2vec-google-news-300')
 
+RNN_MODEL = path.join(FULL_PATH, 'data/rnn_model.json')
+RNN_WEIGHTS = path.join(FULL_PATH, 'data/rnn_weights.h5')
+
 LARGE_DATASET_RAW = path.join(FULL_PATH, 'data/SentimentAnalysisDataset.csv')
 LARGE_DATASET_DESTINATION = path.join(FULL_PATH, 'data/large_dataset.csv')
 CNN_MODEL = path.join(FULL_PATH, 'data/CNNModel.json')
