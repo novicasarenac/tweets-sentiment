@@ -8,18 +8,18 @@ from tweets_sentiment.preprocessing.transform_data import load_sleng_dict
 from tweets_sentiment.preprocessing.transform_data import init_tokenizer
 from tweets_sentiment.preprocessing.constants import DATASET_DESTINATION
 from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
+from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
 
 
 def check_skewness():
-    data = pd.read_csv(PREPROCESSED_DATASET)
+    data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
     df = pd.DataFrame(data)
-    print(df.groupby('sentiment').size())
+    print(df.groupby('Sentiment').size())
     plt.hist(df.iloc[:, 1])
     plt.show()
 
 
 def preprocess_and_save(column, preprocess_data, tokenizer, slang_dict, checker):
-    print(column[0])
     tweet = column[2]
     clean_tweet = clear_data(tweet)
     tweet = transform_post(clean_tweet, tokenizer, slang_dict, checker)
@@ -39,5 +39,5 @@ def preprocess_data():
 
 
 if __name__ == '__main__':
-    preprocess_data()
-    # check_skewness()
+    # preprocess_data()
+    check_skewness()
