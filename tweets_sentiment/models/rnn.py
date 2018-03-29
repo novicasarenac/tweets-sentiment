@@ -1,18 +1,17 @@
 import numpy as np
-import pandas as pd
-import h5py
 
-from gensim.models import KeyedVectors
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 from keras.models import model_from_json
 from keras.layers.embeddings import Embedding
-from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
+from embedding import tokenize_dataset
+from embedding import load_word2vec_model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from tweets_sentiment.preprocessing.preprocess import read_corpus_dataset
 from tweets_sentiment.preprocessing.constants import WORD2VEC_MODEL
 from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
 from tweets_sentiment.preprocessing.constants import RNN_MODEL
@@ -24,29 +23,6 @@ BATCH_SIZE = 32
 VOCABULARY_SIZE = 50000
 
 
-def read_dataset():
-    data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
-    labels = data['Sentiment']
-    tweets = data['SentimentText']
-
-    return tweets, labels
-
-
-def tokenize_dataset(tweets):
-    tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(tweets)
-    sequences = tokenizer.texts_to_sequences(tweets)
-    # dictionary word:index
-    word_indices = {}
-    for key, value in tokenizer.word_index.items():
-        word_indices[key] = value
-        if value == VOCABULARY_SIZE:
-            break
-    print('===> Number of words in dataset: {}'.format(len(word_indices)))
-
-    return sequences, word_indices
-
-
 def create_embedding_matrix(word_indices, w2v_model):
     words_num = len(word_indices) + 1
     embedding_matrix = np.zeros((words_num, EMBEDDING_DIM))
@@ -55,14 +31,6 @@ def create_embedding_matrix(word_indices, w2v_model):
             embedding_matrix[i] = w2v_model.word_vec(word)
 
     return words_num, embedding_matrix
-
-
-def load_word2vec_model(w2v_path):
-    print('===> Loading Word2Vec model...')
-    word2vec_model = KeyedVectors.load_word2vec_format(WORD2VEC_MODEL,
-                                                       binary=True)
-
-    return word2vec_model
 
 
 def create_model(vocab_size, embedding_matrix, MAX_SEQUENCE_LENGTH):
@@ -81,8 +49,8 @@ def create_model(vocab_size, embedding_matrix, MAX_SEQUENCE_LENGTH):
 
 def prepare_data(word2vec_model):
     print('===> Preparing data')
-    tweets, labels = read_dataset()
-    word_sequences, word_indices = tokenize_dataset(tweets)
+    tweets, labels = read_corpus_dataset(LARGE_DATASET_RAW)
+    word_sequences, word_indices = tokenize_dataset(tweets, VOCABULARY_SIZE)
     vocab_size, embedding_matrix = create_embedding_matrix(word_indices,
                                                            word2vec_model)
 
@@ -162,7 +130,11 @@ if __name__ == "__main__":
                                             labels,
                                             test_size=0.2)
 
-    model = load_model(RNN_MODEL, RNN_WEIGHTS)
-    print('Writing model summary:\n')
-    print(model.summary())
-    calculate_f1_score(model, X_test, y_test)
+    try:
+        model = load_model(RNN_MODEL, RNN_WEIGHTS)
+        print('Writing model summary:\n')
+        print(model.summary())
+        calculate_f1_score(model, X_test, y_test)
+    except Exception:
+        print('===> Model not saved. Training new model...')
+        train_model()

@@ -11,6 +11,14 @@ from tweets_sentiment.preprocessing.constants import PREPROCESSED_DATASET
 from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
 
 
+def read_corpus_dataset(dataset_path):
+    data = pd.read_csv(dataset_path, error_bad_lines=False)
+    labels = data['Sentiment']
+    tweets = data['SentimentText']
+
+    return tweets, labels
+
+
 def check_skewness():
     data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
     df = pd.DataFrame(data)

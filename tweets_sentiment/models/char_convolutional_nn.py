@@ -1,45 +1,29 @@
-import numpy as np
-import pandas as pd
-import h5py
-
+from keras.models import Sequential
+from keras.layers import Conv1D
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import MaxPooling1D
+from keras.layers import Flatten
+from keras.layers.embeddings import Embedding
+from keras.utils import to_categorical
+from keras.preprocessing.sequence import pad_sequences
+from sklearn.model_selection import train_test_split
+from embedding import char_tokenize_dataset
+from tweets_sentiment.preprocessing.preprocess import read_corpus_dataset
 from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
 from tweets_sentiment.preprocessing.constants import CHAR_CNN_MODEL
 from tweets_sentiment.preprocessing.constants import CHAR_CNN_WEIGHTS
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.layers import Conv1D, Dense, Dropout, GlobalMaxPooling1D, MaxPooling1D, Flatten
-from keras.layers.embeddings import Embedding
-from keras.models import Sequential
-from sklearn.model_selection import train_test_split
-from keras.utils import to_categorical
 
 
 EMBEDDING_DIMENSION = 16
 
 
-def read_dataset():
-    data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
-
-    labels = data['Sentiment']
-    tweets = data['SentimentText']
-
-    return tweets, labels
-
-
-def tokenize_dataset(tweets):
-    tokenizer = Tokenizer(char_level=True)
-    tokenizer.fit_on_texts(tweets)
-    sequences = tokenizer.texts_to_sequences(tweets)
-    # dictionary character:index
-    char_indices = tokenizer.word_index
-    print('===> Number of characters in dataset: {}\n'.format(len(char_indices)))
-
-    return sequences, char_indices
-
-
 def get_model(CHARS_NUM, MAX_SEQUENCE_LENGTH):
     model = Sequential()
-    model.add(Embedding(CHARS_NUM, EMBEDDING_DIMENSION, input_length=MAX_SEQUENCE_LENGTH, trainable=True))
+    model.add(Embedding(CHARS_NUM,
+                        EMBEDDING_DIMENSION,
+                        input_length=MAX_SEQUENCE_LENGTH,
+                        trainable=True))
     model.add(Conv1D(128, 5, padding='same', activation='relu'))
     model.add(MaxPooling1D(2))
     model.add(Conv1D(64, 5, padding='same', activation='relu'))
@@ -66,8 +50,8 @@ def save_model_and_weights(model):
 
 
 def train_cnn():
-    tweets, labels = read_dataset()
-    sequences, char_indices = tokenize_dataset(tweets)
+    tweets, labels = read_corpus_dataset(LARGE_DATASET_RAW)
+    sequences, char_indices = char_tokenize_dataset(tweets)
     MAX_SEQUENCE_LENGTH = len(max(sequences, key=lambda x: len(x)))
     padded_sequences = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
     labels = to_categorical(labels)
@@ -83,7 +67,12 @@ def train_cnn():
 
     model = get_model(CHARS_NUM, MAX_SEQUENCE_LENGTH)
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=128, epochs=2, validation_split=0.1, verbose=1)
+    model.fit(X_train,
+              y_train,
+              batch_size=128,
+              epochs=2,
+              validation_split=0.1,
+              verbose=1)
 
     # Evaluation on the test set
     scores = model.evaluate(X_test, y_test, verbose=0)

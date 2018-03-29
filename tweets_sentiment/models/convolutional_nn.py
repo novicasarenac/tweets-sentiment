@@ -1,53 +1,23 @@
 import numpy as np
-import pandas as pd
-import h5py
 
-from keras.layers import Conv1D, Dense, Dropout, GlobalMaxPooling1D
-from keras.layers.embeddings import Embedding
 from keras.models import Sequential
-from keras.preprocessing.text import Tokenizer
+from keras.layers import Conv1D
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import GlobalMaxPooling1D
+from keras.layers.embeddings import Embedding
 from keras.preprocessing.sequence import pad_sequences
+from embedding import read_embeddings
+from embedding import tokenize_dataset
 from sklearn.model_selection import train_test_split
-from tweets_sentiment.preprocessing.constants import GLOVE_PATH
+from tweets_sentiment.preprocessing.preprocess import read_corpus_dataset
 from tweets_sentiment.preprocessing.constants import LARGE_DATASET_RAW
 from tweets_sentiment.preprocessing.constants import CNN_MODEL
 from tweets_sentiment.preprocessing.constants import CNN_WEIGHTS
 
 
 EMBEDDING_DIMENSION = 100
-
-
-# read gloVe embeddings with 100 features
-def read_embeddings():
-    embeddings = {}
-    with open(GLOVE_PATH) as glove_file:
-        for line in glove_file:
-            values = line.split()
-            word = values[0]
-            coefs = np.asarray(values[1:], dtype='float32')
-            embeddings[word] = coefs
-    print('===> Using {} embedding vectors\n'.format(len(embeddings)))
-    return embeddings
-
-
-def read_dataset():
-    data = pd.read_csv(LARGE_DATASET_RAW, error_bad_lines=False)
-
-    labels = data['Sentiment']
-    tweets = data['SentimentText']
-
-    return tweets, labels
-
-
-def tokenize_dataset(tweets):
-    tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(tweets)
-    sequences = tokenizer.texts_to_sequences(tweets)
-    # dictionary word:index
-    words_indices = tokenizer.word_index
-    print('===> Number of words in dataset: {}'.format(len(words_indices)))
-
-    return sequences, words_indices
+VOCABULARY_SIZE = 50000
 
 
 # mapping pretrained coefficients to dataset
@@ -64,7 +34,11 @@ def create_embedding_matrix(word_indices, embeddings):
 
 def get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH):
     model = Sequential()
-    model.add(Embedding(WORDS_NUM, EMBEDDING_DIMENSION, weights=[embedding_matrix], input_length=MAX_SEQUENCE_LENGTH, trainable=False))
+    model.add(Embedding(WORDS_NUM,
+                        EMBEDDING_DIMENSION,
+                        weights=[embedding_matrix],
+                        input_length=MAX_SEQUENCE_LENGTH,
+                        trainable=False))
     model.add(Conv1D(256, 3, padding='same', activation='relu'))
     model.add(Conv1D(128, 3, padding='same', activation='relu'))
     model.add(Conv1D(64, 3, padding='same'))
@@ -91,8 +65,8 @@ def train_cnn():
     print('===> Reading GloVe words embeddings\n')
     embeddings = read_embeddings()
     # 1.6M tweets
-    tweets, labels = read_dataset()
-    sequences, word_indices = tokenize_dataset(tweets)
+    tweets, labels = read_corpus_dataset(LARGE_DATASET_RAW)
+    sequences, word_indices = tokenize_dataset(tweets, VOCABULARY_SIZE)
 
     MAX_SEQUENCE_LENGTH = len(max(sequences, key=lambda x: len(x)))
     padded_sequences = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
@@ -109,7 +83,12 @@ def train_cnn():
 
     model = get_model(WORDS_NUM, embedding_matrix, MAX_SEQUENCE_LENGTH)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=128, epochs=5, validation_data=(X_test, y_test), verbose=1)
+    model.fit(X_train,
+              y_train,
+              batch_size=128,
+              epochs=5,
+              validation_data=(X_test, y_test),
+              verbose=1)
 
     # Evaluation on the test set
     scores = model.evaluate(X_test, y_test, verbose=0)

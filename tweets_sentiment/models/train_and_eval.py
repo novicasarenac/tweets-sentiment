@@ -48,13 +48,13 @@ def evaluate(pipeline, X_train, X_test, y_train, y_test):
     compute_accuracy(pipeline, X_test, y_test)
 
 
-def load_pipelines():
+def load_pipelines(tf_idf):
     print("===> Loading all pipelines...")
 
-    nb_pipeline = bag_of_words(MultinomialNB())
-    lr_pipeline = bag_of_words(LogisticRegression())
-    svm_pipeline = bag_of_words(LinearSVC())
-    xgb_pipeline = bag_of_words(XGBClassifier())
+    nb_pipeline = bag_of_words(MultinomialNB(), tf_idf)
+    lr_pipeline = bag_of_words(LogisticRegression(), tf_idf)
+    svm_pipeline = bag_of_words(LinearSVC(), tf_idf)
+    xgb_pipeline = bag_of_words(XGBClassifier(), tf_idf)
 
     print("===> Setting parameters...")
     nb_pipeline.set_params(**read_params("data/nb_parameters.json"))
@@ -67,11 +67,13 @@ def load_pipelines():
                  'Linear SVM': svm_pipeline,
                  'XGBooster': xgb_pipeline,
                  }
+
     return pipelines
 
 
 if __name__ == "__main__":
-    pipelines = load_pipelines()
+    # load classifier pipelines with or without Tfidf transformer
+    pipelines = load_pipelines(False)
     labels, tweets = read_data()
     X_train, X_test, y_train, y_test = train_test_split(tweets,
                                                         labels,
