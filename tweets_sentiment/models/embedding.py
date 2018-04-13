@@ -7,7 +7,7 @@ from gensim.models import KeyedVectors
 from tweets_sentiment.preprocessing.constants import WORD2VEC_MODEL
 from tweets_sentiment.preprocessing.constants import GLOVE_PATH
 
-WORDS_NUM = 5000
+WORDS_NUM = 3000
 
 
 def tokenize_dataset(tweets, vocabulary_size):

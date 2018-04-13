@@ -26,8 +26,8 @@ def transform_post(twitter_post, tokenizer, slang_dict, checker):
             | transform_slang_words(slang_dict) \
             | transform_shortwords \
             | remove_special_characters \
-            | spell_checker(checker) \
-            | remove_one_character_words
+            # | spell_checker(checker) \
+            # | remove_one_character_words
             # | lemmatization
     return ' '.join(transformed_tweet)
 
